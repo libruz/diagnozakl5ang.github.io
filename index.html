@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DIAGNOZA Z J. ANGIELSKIEGO KLASA 5b</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
     <style>
         * {
             margin: 0;
@@ -457,14 +457,15 @@
     </div>
 
     <!-- Supabase JS -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     
     <script>
         // Konfiguracja Supabase
         const SUPABASE_URL = 'https://pozqjihdisdsyzcelydh.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBvenFqaWhkaXNkc3l6Y2VseWRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk5Mzk0NDgsImV4cCI6MjA4NTUxNTQ0OH0.iLLGaMf89VrtO3RuL4fheOQQDWrSLvbU-p9mr6vhHyU';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBvenFqaWhkaXNkc3l6Y2VseWRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk5Mzk0NDgsImV4cCI6MjA4NTUxNTQ0OH0.iLLGaMf89VrtO3RuL4fheOQQDWrSLvbU-p9mr6vhHyU';
         
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // Tworzymy klienta Supabase
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
         // Dane testu - zadania i typy
         const tasks = [
@@ -807,22 +808,12 @@
                         `;
                     });
                 }
-                else if (task.type === 'translation') {
+                else if (task.type === 'translation' || task.type === 'completion') {
                     task.questions.forEach((question, index) => {
                         content += `
                         <div class="question">
                             <h3>${question}</h3>
                             <input type="text" class="translation-input" name="task-${task.id}-q${index+1}" placeholder="Wpisz tłumaczenie...">
-                        </div>
-                        `;
-                    });
-                }
-                else if (task.type === 'completion') {
-                    task.questions.forEach((question, index) => {
-                        content += `
-                        <div class="question">
-                            <h3>${question}</h3>
-                            <input type="text" class="translation-input" name="task-${task.id}-q${index+1}" placeholder="Wpisz poprawną formę...">
                         </div>
                         `;
                     });
@@ -1063,6 +1054,7 @@
                 nextBtn.textContent = "Zapisz odpowiedzi";
                 nextBtn.className = "nav-btn save";
                 nextBtn.innerHTML = '<i class="fas fa-save"></i> Zapisz odpowiedzi';
+                nextBtn.disabled = false;
             } else {
                 nextBtn.textContent = "Dalej";
                 nextBtn.className = "nav-btn next";
@@ -1084,11 +1076,14 @@
             };
             
             try {
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('test_results')
                     .insert([dataToSave]);
                 
-                if (error) throw error;
+                if (error) {
+                    console.error("Błąd Supabase:", error);
+                    throw error;
+                }
                 
                 showMessage("Twoje odpowiedzi zostały pomyślnie zapisane! Dziękujemy za wypełnienie testu.", "success");
                 
