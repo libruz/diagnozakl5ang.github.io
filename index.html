@@ -368,12 +368,44 @@
             flex-grow: 1;
         }
         
+        .true-false-options {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+        
+        .true-false-option {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: white;
+            border: 2px solid var(--gray);
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .true-false-option.selected {
+            border-color: var(--primary);
+            background-color: #fff9f7;
+        }
+        
+        .true-false-option input {
+            margin-right: 10px;
+        }
+        
         footer {
             text-align: center;
             padding: 20px;
             color: #636e72;
             font-size: 0.9rem;
             margin-top: 30px;
+        }
+        
+        .task-points {
+            font-size: 0.9rem;
+            color: var(--primary);
+            font-weight: bold;
+            margin-left: 10px;
         }
         
         @media (max-width: 768px) {
@@ -406,7 +438,7 @@
     <div class="container">
         <header>
             <h1>DIAGNOZA Z J. ANGIELSKIEGO</h1>
-            <div class="subtitle">Klasa 5b • Test interaktywny</div>
+            <div class="subtitle">Klasa 5b • Test interaktywny • Format zgodny z kluczem odpowiedzi</div>
         </header>
         
         <div class="test-container">
@@ -422,7 +454,7 @@
                 </div>
                 
                 <div class="task-instruction">
-                    <i class="fas fa-info-circle"></i> Test składa się z 13 zadań. Możesz poruszać się między zadaniami za pomocą przycisków "Wstecz" i "Dalej" lub klikając na pasek postępu na dole strony.
+                    <i class="fas fa-info-circle"></i> Test składa się z 13 zadań. Każde zadanie ma określoną liczbę punktów. Możesz poruszać się między zadaniami za pomocą przycisków "Wstecz" i "Dalej" lub klikając na pasek postępu na dole strony.
                 </div>
             </div>
             
@@ -469,12 +501,12 @@
         // Tworzymy klienta Supabase
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
-        // Dane testu - zadania i typy
+        // Dane testu - zadania i typy zgodne z kluczem odpowiedzi
         const tasks = [
             {
                 id: 1,
                 title: "Zadanie 1: Rozumienie ze słuchu",
-                instruction: "Posłuchaj nagrania i wybierz poprawną odpowiedź.",
+                instruction: "Posłuchaj nagrania i wybierz poprawną odpowiedź. (0-5 p.)",
                 type: "multiple-choice",
                 questions: [
                     "1. What day of the week is it?",
@@ -490,15 +522,16 @@
                     ["A. Mopping the floors", "B. Doing the dusting", "C. Washing the dishes"],
                     ["A. fantastic.", "B. boring.", "C. relaxing."]
                 ],
+                correctAnswers: ["B", "B", "B", "A", "B"], // Z klucza: 1B, 2C, 3B, 4A, 5B
                 hasAudio: true,
-                // Jeśli pliki są w folderze audio/, zmień na: "audio/nagranie1.mp3"
                 audioFile: "nagranie1.mp3", 
-                audioPlays: 3
+                audioPlays: 3,
+                maxPoints: 5
             },
             {
                 id: 2,
                 title: "Zadanie 2: Rozumienie ze słuchu",
-                instruction: "Posłuchaj nagrania i zdecyduj czy zdania są prawdziwe (T) czy fałszywe (F).",
+                instruction: "Posłuchaj nagrania i zdecyduj czy zdania są prawdziwe (T) czy fałszywe (F). (0-5 p.)",
                 type: "true-false",
                 questions: [
                     "1. Monica has tennis classes after school.",
@@ -507,14 +540,16 @@
                     "4. Mr Taylor doesn't like swimming.",
                     "5. Jacob has got a police officer's hat."
                 ],
+                correctAnswers: ["F", "T", "F", "F", "F"], // Z klucza: 1F, 2T, 3F, 4F, 5F
                 hasAudio: true,
                 audioFile: "nagranie2.mp3",
-                audioPlays: 3
+                audioPlays: 3,
+                maxPoints: 5
             },
             {
                 id: 3,
                 title: "Zadanie 3: Rozumienie ze słuchu",
-                instruction: "Posłuchaj nagrania i dopasuj mówców (1-5) do pytań (A-E).",
+                instruction: "Posłuchaj nagrania i dopasuj mówców 1-5 do pytań A-E. (0-5 p.)",
                 type: "matching",
                 questions: [
                     "Speaker 1",
@@ -524,14 +559,16 @@
                     "Speaker 5"
                 ],
                 matches: ["A. What do you do on your birthday?", "B. When do you get up?", "C. When do you do your homework?", "D. When do you play computer games?", "E. When do you eat lunch?"],
+                correctAnswers: ["A", "E", "C", "B", "D"], // Z klucza: 1A, 2E, 3C, 4B, 5D
                 hasAudio: true,
                 audioFile: "nagranie3.mp3",
-                audioPlays: 3
+                audioPlays: 3,
+                maxPoints: 5
             },
             {
                 id: 4,
                 title: "Zadanie 4: Czytanie ze zrozumieniem",
-                instruction: "Przeczytaj tekst i wybierz poprawną odpowiedź: A, B lub C.",
+                instruction: "Przeczytaj tekst i wybierz poprawną odpowiedź: A, B lub C. (0-5 p.)",
                 type: "multiple-choice",
                 questions: [
                     "1. The new sports centre is",
@@ -546,12 +583,14 @@
                     ["A. three", "B. two", "C. one"],
                     ["A. trampoline", "B. diving board", "C. swimming pool"],
                     ["A. sports shoes", "B. sports clothes", "C. sports equipment"]
-                ]
+                ],
+                correctAnswers: ["C", "A", "A", "B", "C"], // Z klucza: 1C, 2A, 3B, 4B, 5C
+                maxPoints: 5
             },
             {
                 id: 5,
                 title: "Zadanie 5: Wybór poprawnej odpowiedzi",
-                instruction: "Wybierz poprawną odpowiedź: A, B lub C.",
+                instruction: "Wybierz poprawną odpowiedź: A, B lub C. (0-5 p.)",
                 type: "multiple-choice",
                 questions: [
                     "1. I play basketball the afternoon.",
@@ -566,12 +605,14 @@
                     ["A. at", "B. in", "C. up"],
                     ["A. on", "B. at", "C. in"],
                     ["A. after", "B. before", "C. behind"]
-                ]
+                ],
+                correctAnswers: ["B", "C", "A", "A", "B"], // Z klucza: 1B, 2C, 3A, 4A, 5B
+                maxPoints: 5
             },
             {
                 id: 6,
                 title: "Zadanie 6: Wybór poprawnej odpowiedzi",
-                instruction: "Wybierz poprawną odpowiedź: A, B lub C.",
+                instruction: "Wybierz poprawną odpowiedź: A, B lub C. (0-5 p.)",
                 type: "multiple-choice",
                 questions: [
                     "1. A looks like a large dog.",
@@ -586,12 +627,14 @@
                     ["A. kangaroo", "B. hamster", "C. eagle"],
                     ["A. seal", "B. spider", "C. parrot"],
                     ["A. parrot", "B. seal", "C. mouse"]
-                ]
+                ],
+                correctAnswers: ["B", "C", "C", "A", "A"], // Z klucza: 1B, 2C, 3C, 4A, 5A
+                maxPoints: 5
             },
             {
                 id: 7,
                 title: "Zadanie 7: Tłumaczenie",
-                instruction: "Przetłumacz na język angielski fragmenty zdań podane w nawiasie.",
+                instruction: "Przetłumacz na język angielski fragmenty zdań podane w nawiasie. (0-5 p.)",
                 type: "translation",
                 questions: [
                     "1. This hamster looks (bardzo uroczo)",
@@ -600,12 +643,14 @@
                     "4. Wolves can run at speeds of 65km per hour. They're really (szybkie i silne)",
                     "5. My new dog is really (puszysty)"
                 ],
-                examples: ["Przykład: Suzy is very (przyjazna) friendly."]
+                examples: ["Przykład: Suzy is very (przyjazna) friendly."],
+                correctAnswers: ["very cute", "dangerous", "exotic animals", "fast and strong", "fluffy"],
+                maxPoints: 5
             },
             {
                 id: 8,
                 title: "Zadanie 8: Tłumaczenie",
-                instruction: "Przetłumacz słowa z nawiasów na język angielski.",
+                instruction: "Przetłumacz słowa z nawiasów na język angielski. (0-10 p.)",
                 type: "translation",
                 questions: [
                     "1. I like team sports like basketball and (siatkówkę)",
@@ -619,12 +664,14 @@
                     "9. Dad says (jesień)",
                     "10. Do you know that (szpinak)"
                 ],
-                examples: ["Przykład: I want to (zorganizować) organise a party."]
+                examples: ["Przykład: I want to (zorganizować) organise a party."],
+                correctAnswers: ["volleyball", "on Fridays", "ice skating", "do (our) homework", "guinea pig", "tree house", "Italian", "look after", "autumn", "spinach"],
+                maxPoints: 10
             },
             {
                 id: 9,
                 title: "Zadanie 9: Uzupełnianie zdań",
-                instruction: "Przeczytaj zdania i wybierz właściwe wyrazy.",
+                instruction: "Przeczytaj zdania i wybierz właściwe wyrazy. (0-5 p.)",
                 type: "completion",
                 questions: [
                     "1. A: Are you happy? B: Yes, I am / are.",
@@ -633,12 +680,14 @@
                     "4. A: Do you speak English? B: No, I don't / doesn't.",
                     "5. Do / Does she like dogs?"
                 ],
-                examples: ["Przykład: My name is / are Ann."]
+                examples: ["Przykład: My name is / are Ann."],
+                correctAnswers: ["am", "has got", "mice", "don't", "Does"],
+                maxPoints: 5
             },
             {
                 id: 10,
                 title: "Zadanie 10: Wybór poprawnej odpowiedzi",
-                instruction: "Przeczytaj pytania i zakreśl właściwą odpowiedź.",
+                instruction: "Przeczytaj pytania i zakreśl właściwą odpowiedź. (0-5 p.)",
                 type: "multiple-choice",
                 questions: [
                     "1. Who's in the photo?",
@@ -653,12 +702,14 @@
                     ["A. In the afternoon.", "B. At one o'clock.", "C. A ham and cheese sandwich."],
                     ["A. In the mountains.", "B. I like skiing.", "C. During the winter holidays."],
                     ["A. By bike.", "B. Twenty.", "C. It's next to my house."]
-                ]
+                ],
+                correctAnswers: ["B", "B", "B", "C", "A"], // Z klucza: 1 B, 2 B, 3 B, 4 C, 5 A
+                maxPoints: 5
             },
             {
                 id: 11,
                 title: "Zadanie 11: Dopasowywanie",
-                instruction: "Dopasuj pytania (1-5) do odpowiedzi (A-E).",
+                instruction: "Dopasuj pytania (1-5) do odpowiedzi (A-E). (0-5 p.)",
                 type: "matching",
                 questions: [
                     "1. What does it do?",
@@ -667,12 +718,14 @@
                     "4. How often do you feed it?",
                     "5. Where does your tortoise live?"
                 ],
-                matches: ["A. It likes lettuce.", "B. It lives in my garden.", "C. Two times every day.", "D. It walks slowly and sleeps a lot.", "E. It's brown and green and very small."]
+                matches: ["A. It likes lettuce.", "B. It lives in my garden.", "C. Two times every day.", "D. It walks slowly and sleeps a lot.", "E. It's brown and green and very small."],
+                correctAnswers: ["D", "E", "A", "C", "B"], // Z klucza: 1 D, 2 E, 3 A, 4 C, 5 B
+                maxPoints: 5
             },
             {
                 id: 12,
                 title: "Zadanie 12: Tłumaczenie",
-                instruction: "Przetłumacz fragmenty rozmów w nawiasach na język angielski.",
+                instruction: "Przetłumacz fragmenty rozmów w nawiasach na język angielski. (0-5 p.)",
                 type: "translation",
                 questions: [
                     "1. A: It's my (urodziny) today. B: All the best!",
@@ -681,12 +734,14 @@
                     "4. A: Here's a present (dla Ciebie) B: What a nice (niespodzianka)",
                     "5. A: You can visit me on Sunday. B: Fantastic, that's good (wiadomość)"
                 ],
-                examples: ["Przykład: I want to (zorganizować) organise a party."]
+                examples: ["Przykład: I want to (zorganizować) organise a party."],
+                correctAnswers: ["birthday", "awful/terrible", "What a pity", "for you, surprise", "news"],
+                maxPoints: 5
             },
             {
                 id: 13,
                 title: "Zadanie 13: Dopasowywanie",
-                instruction: "Dopasuj zdania (1-5) do odpowiedzi (A-E).",
+                instruction: "Dopasuj zdania (1-5) do odpowiedzi (A-E). (0-5 p.)",
                 type: "matching",
                 questions: [
                     "1. Enjoy your meal!",
@@ -695,7 +750,9 @@
                     "4. Can I have a lemonade, please?",
                     "5. Thank you for making a really tasty lunch."
                 ],
-                matches: ["A. We've got sausage and potatoes tonight.", "B. You're welcome. I'm happy you like it.", "C. I would like to have a chicken salad.", "D. Thank you. It looks really tasty.", "E. Yes, here you are."]
+                matches: ["A. We've got sausage and potatoes tonight.", "B. You're welcome. I'm happy you like it.", "C. I would like to have a chicken salad.", "D. Thank you. It looks really tasty.", "E. Yes, here you are."],
+                correctAnswers: ["D", "A", "C", "E", "B"], // Z klucza: 1 D, 2 A, 3 C, 4 E, 5 B
+                maxPoints: 5
             }
         ];
         
@@ -731,7 +788,7 @@
                 stepDiv.className = 'step';
                 stepDiv.id = `step-${task.id}`;
                 
-                let content = `<h2>${task.title}</h2>`;
+                let content = `<h2>${task.title} <span class="task-points">(0-${task.maxPoints} p.)</span></h2>`;
                 content += `<p class="task-instruction">${task.instruction}</p>`;
                 
                 // Przykłady jeśli istnieją
@@ -782,12 +839,12 @@
                         content += `
                         <div class="question">
                             <h3>${question}</h3>
-                            <div class="options">
-                                <label class="option">
+                            <div class="true-false-options">
+                                <label class="true-false-option" id="tf-task-${task.id}-q${index+1}-T">
                                     <input type="radio" name="task-${task.id}-q${index+1}" value="T">
                                     Prawda (T)
                                 </label>
-                                <label class="option">
+                                <label class="true-false-option" id="tf-task-${task.id}-q${index+1}-F">
                                     <input type="radio" name="task-${task.id}-q${index+1}" value="F">
                                     Fałsz (F)
                                 </label>
@@ -834,6 +891,28 @@
                         playAudio(this.dataset.audio, task.id);
                     });
                 }
+            });
+            
+            // Dodaj event listenery dla opcji T/F
+            tasks.filter(task => task.type === 'true-false').forEach(task => {
+                task.questions.forEach((_, index) => {
+                    const tOption = document.getElementById(`tf-task-${task.id}-q${index+1}-T`);
+                    const fOption = document.getElementById(`tf-task-${task.id}-q${index+1}-F`);
+                    
+                    if (tOption) {
+                        tOption.addEventListener('click', function() {
+                            tOption.classList.add('selected');
+                            if (fOption) fOption.classList.remove('selected');
+                        });
+                    }
+                    
+                    if (fOption) {
+                        fOption.addEventListener('click', function() {
+                            fOption.classList.add('selected');
+                            if (tOption) tOption.classList.remove('selected');
+                        });
+                    }
+                });
             });
         }
         
@@ -938,7 +1017,7 @@
             if (currentStep === 0) {
                 progressText.textContent = "Krok 0 z 13: Wprowadzenie";
             } else {
-                progressText.textContent = `Krok ${currentStep} z 13: Zadanie ${currentStep}`;
+                progressText.textContent = `Krok ${currentStep} z 13: Zadanie ${currentStep} (0-${tasks.find(t => t.id === currentStep).maxPoints} p.)`;
             }
         }
         
@@ -1051,7 +1130,21 @@
                     const answer = savedAnswers[`q${i}`];
                     if (answer) {
                         const input = stepElement.querySelector(`input[name="task-${task.id}-q${i}"][value="${answer}"]`);
-                        if (input) input.checked = true;
+                        if (input) {
+                            input.checked = true;
+                            // Dla T/F aktualizuj styl
+                            if (task.type === 'true-false') {
+                                const tOption = document.getElementById(`tf-task-${task.id}-q${i}-T`);
+                                const fOption = document.getElementById(`tf-task-${task.id}-q${i}-F`);
+                                if (answer === 'T' && tOption) {
+                                    tOption.classList.add('selected');
+                                    if (fOption) fOption.classList.remove('selected');
+                                } else if (answer === 'F' && fOption) {
+                                    fOption.classList.add('selected');
+                                    if (tOption) tOption.classList.remove('selected');
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -1101,15 +1194,69 @@
             }
         }
         
+        // Oblicz wyniki (dla nauczyciela)
+        function calculateResults() {
+            let totalPoints = 0;
+            let maxTotalPoints = 0;
+            const detailedResults = {};
+            
+            tasks.forEach(task => {
+                maxTotalPoints += task.maxPoints;
+                const studentTaskAnswers = studentAnswers[`task-${task.id}`] || {};
+                let taskPoints = 0;
+                
+                if (task.correctAnswers) {
+                    task.questions.forEach((_, index) => {
+                        const studentAnswer = studentTaskAnswers[`q${index+1}`];
+                        const correctAnswer = task.correctAnswers[index];
+                        
+                        if (studentAnswer) {
+                            // Dla zadań tłumaczeniowych i uzupełniania - porównujemy bez uwzględnienia wielkości liter
+                            if (task.type === 'translation' || task.type === 'completion') {
+                                if (studentAnswer.trim().toLowerCase() === correctAnswer.toLowerCase()) {
+                                    taskPoints++;
+                                }
+                            } 
+                            // Dla zadań zamkniętych - dokładne porównanie
+                            else if (studentAnswer === correctAnswer) {
+                                taskPoints++;
+                            }
+                        }
+                    });
+                }
+                
+                totalPoints += taskPoints;
+                detailedResults[`task-${task.id}`] = {
+                    points: taskPoints,
+                    maxPoints: task.maxPoints,
+                    answers: studentTaskAnswers
+                };
+            });
+            
+            return {
+                totalPoints,
+                maxTotalPoints,
+                percentage: maxTotalPoints > 0 ? Math.round((totalPoints / maxTotalPoints) * 100) : 0,
+                detailedResults
+            };
+        }
+        
         // Zapisz wyniki do Supabase
         async function saveResults() {
             showMessage("Zapisywanie wyników...", "success");
+            
+            // Oblicz wyniki
+            const results = calculateResults();
             
             // Przygotuj dane do zapisania
             const dataToSave = {
                 student_name: studentName,
                 answers: studentAnswers,
                 audio_plays: audioPlayCounts,
+                total_points: results.totalPoints,
+                max_points: results.maxTotalPoints,
+                percentage: results.percentage,
+                detailed_results: results.detailedResults,
                 completed_at: new Date().toISOString()
             };
             
@@ -1123,7 +1270,7 @@
                     throw error;
                 }
                 
-                showMessage("Twoje odpowiedzi zostały pomyślnie zapisane! Dziękujemy za wypełnienie testu.", "success");
+                showMessage(`Twoje odpowiedzi zostały pomyślnie zapisane! Zdobyłeś ${results.totalPoints}/${results.maxTotalPoints} punktów (${results.percentage}%). Dziękujemy za wypełnienie testu.`, "success");
                 
                 // Zablokuj przyciski po zapisaniu
                 document.getElementById('prev-btn').disabled = true;
